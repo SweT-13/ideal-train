@@ -55,21 +55,6 @@ void genirateFile(const char *Name = "hello.txt", uint64_t N = 100)
     gen.close();
 }
 
-void readFile(const char *Name, uint64_t N)
-{
-    std::fstream gen(Name, std::ios_base::in);
-    if (gen.is_open())
-    {
-        for (uint32_t i = 0; i < N; i++)
-        {
-            int32_t tmp = my_rand();
-            gen.read((char *)&tmp, sizeof(int32_t));
-            std::cout << tmp << "\n";
-        }
-    }
-    gen.close();
-}
-
 int main(int argc, char *argv[])
 {
     try
@@ -125,18 +110,17 @@ int main(int argc, char *argv[])
         Tape outTape(argc < 3 ? "out.txt" : argv[2], N_size);
 
         std::cout << "\n-----------------\nHello World Sort!\n-----------------\n";
-
+        inTape.shiftCursor(9);
+        std::cout << inTape.read();
+        inTape.print();
+        std::cout << inTape.read();
+        return 0;
         // int64_t tmp;
         // std::cout << (int32_t)(inTape.read(tmp) >> 32) << "\n";
         // inTape.shiftCur(1);
         // std::cout << (int32_t)(inTape.read(tmp));
         TapeSorter sorter(M_size);
         sorter.sort(inTape, outTape);
-        inTape.~Tape();
-        outTape.~Tape();
-        readFile("in.txt", N_size);
-        std::cout << "\n=========\n";
-        readFile("out.txt", N_size);
     }
     catch (std::invalid_argument &e)
     {

@@ -9,32 +9,24 @@
 
 #define singleElementSize 4
 
-#define testTape(x)                                         \
-    if (!x.is_open())                                       \
-    {                                                       \
+#define testTape(x)                                                      \
+    if (!x.is_open())                                                    \
+    {                                                                    \
         throw std::invalid_argument(_fileName + " file tape not faund"); \
     }
 
-class Tape 
+class Tape : public ITape
 {
 public:
-    Tape(const std::string &filename, size_t N = 5u);
+    Tape(const std::string &filename, long long length);
     ~Tape();
 
-    template <typename T>
-    T read(T &tmp) ;
+    int32_t read(void) override;
+    void write(const int32_t &needWrite) override;
+    void shiftCursor(long long index) override;
+    std::streampos getCurrentPosition() const override;
 
-    template <typename T>
-    void write(const T &needWrite);
-
-    //void print();
-
-    // typeTape write(typeTape needWrite);
-
-    /* перемещение же только по элементно ?
-    типо даже если я могу прочитать 2 элемента (8 байт) двигаюсь за раз я на 1 элемент (4 байта) */
-    std::streampos shiftCur(long long index);
-
+    void print(void);
     unsigned long long getReadCounter(void) const;
     unsigned long long getWriteCounter(void) const;
     unsigned long long getShiftCounter(void) const;
@@ -43,17 +35,16 @@ public:
 private:
     std::fstream _file;
     std::string _fileName;
+    long long _maxSize = 0u;
+    std::streampos _position;
 
-    size_t _maxSize = 0u;
-
-    /* Чтение запись сдвиг мне понятно что такое;
-        а что такое прокрутка ленты мне не понятно.. */
     unsigned long long _writeCounter = 0u;
     unsigned long long _readCounter = 0u;
     unsigned long long _shiftCounter = 0u;
     unsigned long long _travelCounter = 0u;
 };
 
+/*
 template <typename T>
 T Tape::read(T &tmp)
 {
@@ -73,5 +64,5 @@ void Tape::write(const T &needWrite)
     _writeCounter++;
     return;
 }
-
+*/
 #endif
