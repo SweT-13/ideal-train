@@ -19,6 +19,9 @@ public:
 
     // Получение текущей позиции курсора
     virtual std::streampos getCurrentPosition() const = 0;
+
+    // Получение количества элементов
+    virtual int64_t getSize() const = 0;
 };
 
 #endif

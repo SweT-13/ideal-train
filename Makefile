@@ -8,27 +8,32 @@ CXXFLAGS = -std=c++17 -Wall -Wextra
 LDFLAGS =
 
 # Исходные файлы
-SRCS = 	man.cpp \
-		TapeInterface/FileTape.cpp \
-		TapeSorter.cpp
+SRCS = man.cpp \
+       TapeInterface/FileTape.cpp \
+       TapeSorter.cpp \
+       UnitTest.cpp
 
 # Заголовочные файлы
-HEADERS = 	TapeInterface/FileTape.h \
-			TapeSorter.h
+HEADERS = TapeInterface/FileTape.h \
+          TapeSorter.h
 
 # Объектные файлы
 OBJS = $(SRCS:.cpp=.o)
 
 # Исполняемые файлы
 TARGET = man.exe
- 
+TEST_TARGET = UnitTest.exe
+
 # Правило для сборки всех целей
-all: $(TARGET) 
+all: $(TARGET)
 
 # Правило для сборки основного приложения
-$(TARGET): $(OBJS)
+$(TARGET): man.o TapeInterface/FileTape.o TapeSorter.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
+# Правило для сборки тестового приложения
+$(TEST_TARGET): UnitTest.o TapeInterface/FileTape.o TapeSorter.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Правило для сборки объектных файлов
 %.o: %.cpp $(HEADERS)
@@ -36,9 +41,13 @@ $(TARGET): $(OBJS)
 
 # Правило для очистки
 clean:
-	del *.o *.exe TapeInterface\*.o TapeInterface\*.exe
+	del *.o *.exe TapeInterface\*.o
+
+# Цель для сборки и запуска тестов
+check: $(TEST_TARGET)
+	@./$(TEST_TARGET)
 
 # Установка зависимостей
-$(OBJS): $(HEADERS) | $(TMP_DIR)
+$(OBJS): $(HEADERS)
 
-.PHONY: all clean
+.PHONY: all clean check

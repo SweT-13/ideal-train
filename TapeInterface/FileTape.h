@@ -25,6 +25,7 @@ public:
     void write(const int32_t &needWrite) override;
     void shiftCursor(long long index) override;
     std::streampos getCurrentPosition() const override;
+    int64_t getSize() const override;
 
     void print(void);
     unsigned long long getReadCounter(void) const;

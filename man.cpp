@@ -40,12 +40,12 @@ int32_t my_rand()
     seed = seed * 134775813 + 1; // Линейный конгруэнтный метод
     return seed % 0xffffffff;
 }
-void genirateFile(const char *Name = "hello.txt", uint64_t N = 100)
+void genirateFile(const char *Name = "hello.txt", int64_t N = 100)
 {
     std::fstream gen(Name, std::ios_base::out);
     if (gen.is_open())
     {
-        for (uint64_t i = 0; i < N; i++)
+        for (int64_t i = 0; i < N; i++)
         {
             int32_t tmp = my_rand();
             gen.write((char *)&tmp, sizeof(int32_t));
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
             alarm("file config not exist");
         }
         // @Надо бы проверить на корректность числа
-        long long N_size = 0;
-        unsigned long M_size = 0u;
+        int64_t N_size = 0;
+        int64_t M_size = 0u;
         unsigned long writeTime = 0u;
         unsigned long readTime = 0u;
         unsigned long shiftTime = 0u;
@@ -110,10 +110,7 @@ int main(int argc, char *argv[])
         Tape outTape(argc < 3 ? "out.txt" : argv[2], N_size);
 
         std::cout << "\n-----------------\nHello World Sort!\n-----------------\n";
-        inTape.shiftCursor(9);
-        std::cout << inTape.read();
-        inTape.print();
-        std::cout << inTape.read();
+
         return 0;
         // int64_t tmp;
         // std::cout << (int32_t)(inTape.read(tmp) >> 32) << "\n";

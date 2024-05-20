@@ -10,7 +10,7 @@ public:
     void sort(ITape &inputTape, ITape &outputTape);
 
 private:
-    int64_t memoryLimit;
+    int64_t _memoryLimit;
 };
 
 #endif

@@ -51,7 +51,7 @@ void Tape::shiftCursor(long long index)
     {
         if (index >= _maxSize)
         {
-            index = _maxSize-1;
+            index = _maxSize - 1;
             // throw ??
         }
         _position = index;
@@ -72,6 +72,11 @@ void Tape::shiftCursor(long long index)
 std::streampos Tape::getCurrentPosition() const
 {
     return _position;
+}
+
+int64_t Tape::getSize() const
+{
+    return _maxSize;
 }
 
 int32_t Tape::read()
