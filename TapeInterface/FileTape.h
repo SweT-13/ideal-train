@@ -22,7 +22,9 @@ public:
     ~Tape();
 
     int32_t read(void) override;
+    int32_t readn(void) override;
     void write(const int32_t &needWrite) override;
+    void writen(const int32_t &needWrite) override;
     void shiftCursor(long long index) override;
     std::streampos getCurrentPosition() const override;
     int64_t getSize() const override;

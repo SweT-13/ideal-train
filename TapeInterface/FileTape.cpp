@@ -89,10 +89,21 @@ int32_t Tape::read()
     return tmp;
 }
 
+int32_t Tape::readn()
+{
+    int32_t tmp = this->read();
+    this->shiftCursor(this->getCurrentPosition() + 1);
+    return tmp;
+}
 void Tape::write(const int32_t &needWrite)
 {
     testTape(_file);
     _file.write((char *)&needWrite, sizeof(int32_t));
     _file.seekg(-1 * (sizeof(int32_t)), std::ios::cur);
     _writeCounter++;
+}
+void Tape::writen(const int32_t &needWrite)
+{
+    this->write(needWrite);
+    this->shiftCursor(this->getCurrentPosition() + 1);
 }

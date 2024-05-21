@@ -2,14 +2,18 @@
 #define TAPESORTER_H
 
 #include <stdint.h>
+#include <stdexcept>
 #include "TapeInterface/ITape.h"
 
-class TapeSorter {
+class TapeSorter
+{
 public:
     TapeSorter(int64_t memoryLimit);
+
     void sort(ITape &inputTape, ITape &outputTape);
 
 private:
+    void merge(ITape &left, ITape &right, ITape &enter);
     int64_t _memoryLimit;
 };
 

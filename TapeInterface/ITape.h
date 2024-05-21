@@ -10,10 +10,10 @@ public:
 
     // Чтение элемента с ленты
     virtual int32_t read(void) = 0;
-
+    virtual int32_t readn(void) = 0;
     // Запись элемента на ленту
     virtual void write(const int32_t &element) = 0;
-
+    virtual void writen(const int32_t &element) = 0;
     // Сдвиг курсора на ленте
     virtual void shiftCursor(long long index) = 0;
 

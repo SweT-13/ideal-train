@@ -19,9 +19,12 @@ void test(T expected, T actual, std::string testName, int line)
 }
 
 int64_t seed = 1;
-int32_t my_rand()
+int32_t my_rand(int32_t count = 0)
 {
-    seed = seed * 134775813 + 1; // Линейный конгруэнтный метод
+    for (int32_t i = 0; i <= count; i++)
+    {
+        seed = seed * 134775813 + 1; // Линейный конгруэнтный метод
+    }
     return seed % 0xffffffff;
 }
 void genirateFile(const char *Name = "hello.txt", int64_t N = 100)

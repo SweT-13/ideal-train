@@ -75,36 +75,26 @@ int main(int argc, char *argv[])
         unsigned long readTime = 0u;
         unsigned long shiftTime = 0u;
         unsigned long travelTime = 0u;
-        confFile >> N_size;
-        std::cout << "\ntape size:\t"
-                  << N_size;
-        confFile >> M_size;
-        std::cout << "\nRAM size:\t"
-                  << M_size;
-        confFile >> writeTime;
-        std::cout << "\nwrite time(ms):\t"
-                  << writeTime;
-        confFile >> readTime;
-        std::cout << "\nread  time(ms):\t"
-                  << readTime;
-        confFile >> shiftTime;
-        std::cout << "\nshift time(ms):\t"
-                  << shiftTime;
-        confFile >> travelTime;
-        std::cout << "\ntravel time(ms):"
-                  << travelTime;
-        if (N_size <= 0)
+        confFile >> N_size >> M_size >> writeTime >> readTime >> shiftTime >> travelTime;
+        std::cout << "\ntape size:\t" << N_size;
+        std::cout << "\nRAM size:\t" << M_size;
+        std::cout << "\nwrite time(ms):\t" << writeTime;
+        std::cout << "\nread  time(ms):\t" << readTime;
+        std::cout << "\nshift time(ms):\t" << shiftTime;
+        std::cout << "\ntravel time(ms):" << travelTime;
+        if (N_size < 3)
         {
-            alarm("need positive N_size");
+            alarm("need positive N_size and 3 min");
         }
         if (M_size < 8)
         {
             // пока короче минимум 8
-            //@Надо написать сравнение по разрядам
             alarm("I need more memory (min 8)");
         }
-
-        genirateFile("in.txt", N_size);
+        if (argc < 3)
+        {
+            genirateFile("in.txt", N_size);
+        }
 
         Tape inTape(argc < 3 ? "in.txt" : argv[1], N_size);
         Tape outTape(argc < 3 ? "out.txt" : argv[2], N_size);
