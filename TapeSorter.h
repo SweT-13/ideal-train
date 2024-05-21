@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include <stdexcept>
+#include <fstream>
 #include "TapeInterface/ITape.h"
+#include "TapeInterface/FileTape.h"
 
 class TapeSorter
 {

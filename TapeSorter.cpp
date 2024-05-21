@@ -31,42 +31,61 @@ void TapeSorter::sort(ITape &inTape, ITape &outTape)
 {
     // memoryLimit это байты для получения количества возможно сохраняемых элементов надо бы разделить на 4
     // ?надо бы использовать вектора?
-    int64_t n = inTape.getSize();
-    std::streampos i = 0;
-    std::streampos j = 0;
+    int64_t n = inTape.getSize(); // ??Нужна ли??
+    int64_t i = 0;
+    int64_t j = 0;
+    int64_t a = 0;
     int64_t tmp = 0;
 
-    int64_t availableSize = (_memoryLimit - sizeof(n) - sizeof(i) - sizeof(j) - sizeof(tmp)) / 4;
+    int64_t availableSize = (_memoryLimit - sizeof(n) - sizeof(n) - sizeof(i) - sizeof(j) - sizeof(tmp)) / 4;
     if (availableSize <= 0)
     {
         throw std::invalid_argument("available memory absent");
     }
     int32_t *ram = new int32_t[availableSize];
-    // Простите, но я уже чет подзапутался в мыслях поэтому буду делеть в лоб
-    // Планируется сделать что то на подобии алгоритма быстрой сортировки
-    availableSize--;
-    //уф, осталось только оперативу сортирануть и прописать логику мерджа до верхнего уровня
-    if (availableSize == 2)
+    n = n / availableSize;
+    for (a = 0; a < n; a++)
     {
-        ITape left();
-        ITape right();
-    }
-    if (availableSize >= 3)
-    {
-        for (i = 0; i < n - availableSize; i += 1)
+        // input ram
+        for (i = 0; i < availableSize; i++)
         {
-            ram[availableSize] = 0;
-            for (j = 0; j < availableSize; j += 1)
+            ram[i] = inTape.readn();
+        }
+        // ram sort
+        for (i = 1; i < availableSize; i++)
+        {
+            j = i;
+            tmp = ram[i];
+            while (j > 0 && (ram[j - 1] >= tmp))
             {
-                ram[availableSize] += ram[j] = inTape.read();
-                inTape.shiftCursor(i + j);
+                ram[j] = ram[j - 1];
+                j--;
             }
-            ram[availableSize] /= availableSize;
-            for (j = 0; j < availableSize; j += 1)
-            {
-                ram[availableSize] += ram[j] = inTape.read();
-                inTape.shiftCursor(i + j);
-            }
+            ram[j] = tmp;
+        }
+        // output file
+        Tape out((std::string) "tmp/" + std::to_string(a) + "_" + std::to_string(availableSize), availableSize);
+        for (i = 0; i < availableSize; i++)
+        {
+            out.writen(ram[i]);
+        }
+        out.~Tape();
+    }
+    if (inTape.getSize() % availableSize != 0)
+    {
+
+        // надо добить остаток что не получилось изначально разбить и до мерджить
+    }
+    // merge
+    tmp = availableSize;
+    while (n <= 1)
+    {
+        for (i = 0; i < n / tmp; i++)
+        {
+            ITape a(std::string tempFilename = "tmp/" + N);
+            ITape b(std::string tempFilename = "tmp/" + N);
+            ITape c(a.getSize() + b.getSize());
+            merge(a, b, c)
         }
     }
 }

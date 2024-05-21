@@ -19,6 +19,7 @@ class Tape : public ITape
 {
 public:
     Tape(const std::string &filename, long long length);
+    Tape(const std::string &filename);
     ~Tape();
 
     int32_t read(void) override;
