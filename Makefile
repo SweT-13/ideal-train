@@ -24,6 +24,9 @@ OBJS = $(SRCS:.cpp=.o)
 TARGET = man.exe
 TEST_TARGET = UnitTest.exe
 
+# Каталог для временных файлов
+TMP_DIR = tmp
+
 # Правило для сборки всех целей
 all: $(TARGET)
 
@@ -42,12 +45,16 @@ $(TEST_TARGET): UnitTest.o TapeInterface/FileTape.o TapeSorter.o
 # Правило для очистки
 clean:
 	del *.o *.exe TapeInterface\*.o
-
+	rmdir /s /q $(TMP_DIR)
 # Цель для сборки и запуска тестов
 check: $(TEST_TARGET)
 	@./$(TEST_TARGET)
 
+# Правило для создания каталога tmp, если его нет
+$(TMP_DIR):
+	mkdir $(TMP_DIR)
+
 # Установка зависимостей
-$(OBJS): $(HEADERS)
+$(OBJS): $(HEADERS) | $(TMP_DIR)
 
 .PHONY: all clean check

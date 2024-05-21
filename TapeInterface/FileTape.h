@@ -30,6 +30,9 @@ public:
     std::streampos getCurrentPosition() const override;
     int64_t getSize() const override;
 
+    int64_t checkSize(void);
+    void singSize(const int64_t &needWrite);
+
     void print(void);
     unsigned long long getReadCounter(void) const;
     unsigned long long getWriteCounter(void) const;
@@ -39,7 +42,7 @@ public:
 private:
     std::fstream _file;
     std::string _fileName;
-    long long _maxSize = 0u;
+    int64_t _maxSize = 0u;
     std::streampos _position;
 
     unsigned long long _writeCounter = 0u;

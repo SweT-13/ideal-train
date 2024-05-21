@@ -64,28 +64,35 @@ void TapeSorter::sort(ITape &inTape, ITape &outTape)
             ram[j] = tmp;
         }
         // output file
-        Tape out((std::string) "tmp/" + std::to_string(a) + "_" + std::to_string(availableSize), availableSize);
+        Tape out((std::string) "tmp/" + std::to_string(a) + ".tape", availableSize);
         for (i = 0; i < availableSize; i++)
         {
             out.writen(ram[i]);
         }
+        out.singSize(availableSize);
         out.~Tape();
     }
     if (inTape.getSize() % availableSize != 0)
     {
-
+        std::cout << "\nHeHe\navailableSize " << std::to_string(availableSize) << " % " << std::to_string(inTape.getSize() % availableSize);
         // надо добить остаток что не получилось изначально разбить и до мерджить
     }
+    return;
     // merge
     tmp = availableSize;
+    // 0 -- a[по availSize] + ?1[< availSize]
+    //
     while (n <= 1)
     {
         for (i = 0; i < n / tmp; i++)
         {
-            ITape a(std::string tempFilename = "tmp/" + N);
-            ITape b(std::string tempFilename = "tmp/" + N);
-            ITape c(a.getSize() + b.getSize());
-            merge(a, b, c)
+            Tape left("tmp/" + std::to_string(i) + "_" + std::to_string(availableSize));
+            Tape right("tmp/" + std::to_string(i) + "_" + std::to_string(availableSize));
+            if (left.getSize() + right.getSize() == inTape.getSize())
+            {
+            }
+            Tape c("tmp/" + std::to_string(a) + "_" + std::to_string(left.getSize() + right.getSize()));
+            merge(left, right, c);
         }
     }
 }

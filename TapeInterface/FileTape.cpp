@@ -4,21 +4,26 @@ Tape::Tape(const std::string &filename, long long length)
     : _fileName(filename), _maxSize(length), _position(0)
 {
     _file.open(_fileName);
+    if (!_file.is_open())
+    {
+        _file.open(_fileName, std::ios::out);
+    }
     testTape(_file);
 }
 
 Tape::Tape(const std::string &filename)
     : _fileName(filename), _position(0)
 {
-    std::string s = _fileName;
-    size_t pos = s.find('_');
-    if (pos++ != s.npos)
-        _maxSize = std::stoi(s.substr(pos));
-    else
-    {
-        throw std::invalid_argument(_fileName + " file tape not faund Size");
-    }
     _file.open(_fileName);
+    if (_file.is_open())
+    {
+        _maxSize = this->checkSize();
+    }
+    if (_maxSize <= 0)
+    {
+        // От чтения певых двух байт файла без подачи размерности я пока не придумал как детектить
+        throw std::invalid_argument(_fileName + " file error size " + std::to_string(_maxSize));
+    }
     testTape(_file);
 }
 
@@ -81,8 +86,8 @@ void Tape::shiftCursor(long long index)
             // throw ??
         }
         _position = _maxSize + index; // индекс отрицательный сюда приходит
-        _file.seekg(index * sizeof(int32_t), std::ios::end);
-        _file.seekp(index * sizeof(int32_t), std::ios::end);
+        _file.seekg(_position * sizeof(int32_t), std::ios::beg);
+        _file.seekp(_position * sizeof(int32_t), std::ios::beg);
     }
 }
 
@@ -94,6 +99,24 @@ std::streampos Tape::getCurrentPosition() const
 int64_t Tape::getSize() const
 {
     return _maxSize;
+}
+
+int64_t Tape::checkSize(void)
+{
+    testTape(_file);
+    _file.seekg(-1 * sizeof(int64_t), std::ios::end);
+    int64_t tmp = 0;
+    _file.read((char *)&tmp, sizeof(int64_t));
+    _file.seekg(_position * sizeof(int32_t), std::ios::beg);
+    return tmp;
+}
+
+void Tape::singSize(const int64_t &needWrite)
+{
+    testTape(_file);
+    _file.seekp(0, std::ios::end);
+    _file.write((char *)&needWrite, sizeof(int64_t));
+    _file.seekp(_position * sizeof(int32_t), std::ios::beg);
 }
 
 int32_t Tape::read()
@@ -109,7 +132,7 @@ int32_t Tape::read()
 int32_t Tape::readn()
 {
     int32_t tmp = this->read();
-    this->shiftCursor(this->getCurrentPosition() + 1);
+    this->shiftCursor(this->getCurrentPosition() + (std::streampos)1);
     return tmp;
 }
 void Tape::write(const int32_t &needWrite)
@@ -122,5 +145,5 @@ void Tape::write(const int32_t &needWrite)
 void Tape::writen(const int32_t &needWrite)
 {
     this->write(needWrite);
-    this->shiftCursor(this->getCurrentPosition() + 1);
+    this->shiftCursor(this->getCurrentPosition() + (std::streampos)1);
 }

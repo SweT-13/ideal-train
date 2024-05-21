@@ -101,7 +101,6 @@ int main(int argc, char *argv[])
 
         std::cout << "\n-----------------\nHello World Sort!\n-----------------\n";
 
-        return 0;
         // int64_t tmp;
         // std::cout << (int32_t)(inTape.read(tmp) >> 32) << "\n";
         // inTape.shiftCur(1);

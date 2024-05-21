@@ -1,7 +1,7 @@
 #include <iostream>
 #include "TapeInterface/FileTape.h"
 
-#define N_size 5
+#define N_size (int64_t)5
 #define nameFile "in.txt"
 
 template <typename T>
@@ -44,6 +44,9 @@ void genirateFile(const char *Name = "hello.txt", int64_t N = 100)
 
 int main()
 {
+    std::cout << "\n\n\n====================================\n";
+    int32_t tmp = 0;
+
     test(3, 5, "My Test FAIL GOOD", __LINE__);
     test(5, 5, "My Test OK GOOD", __LINE__);
 
@@ -54,12 +57,20 @@ int main()
 
     inTape.shiftCursor(0);
     int32_t start0 = inTape.read();
+    seed = 1;
+    test(my_rand(0), start0, "Checking the correctness of reading 0 element", __LINE__);
     inTape.shiftCursor(1);
     int32_t start1 = inTape.read();
+    seed = 1;
+    test(my_rand(1), start1, "Checking the correctness of reading 1 element", __LINE__);
     inTape.shiftCursor(-1);
     int32_t end0 = inTape.read();
+    seed = 1;
+    test(my_rand(N_size - 1), end0, "Checking the correctness of reading N_size - 1 element", __LINE__);
     inTape.shiftCursor(-2);
     int32_t end1 = inTape.read();
+    seed = 1;
+    test(my_rand(N_size - 2), end1, "Checking the correctness of reading N_size - 2 element", __LINE__);
 
     inTape.shiftCursor(-N_size - 1);
     test(start0, inTape.read(), "Exiting the left border -i < 0 (-N_size - 1)", __LINE__);
@@ -77,8 +88,19 @@ int main()
     inTape.shiftCursor(N_size - 2);
     test(end1, inTape.read(), "Exiting the right border i-2 < 0", __LINE__);
 
-    int32_t tmp = 0;
     tmp = inTape.read();
     inTape.print();
-    test(tmp, inTape.read(), "print does not disrupt the position", __LINE__);
+    test(tmp, inTape.read(), "Print does not disrupt the position", __LINE__);
+
+    tmp = inTape.read();
+    inTape.singSize((int64_t)N_size);
+    test(tmp, inTape.read(), "Checking position read after singSize", __LINE__);
+
+    inTape.shiftCursor(-1);
+    tmp = inTape.read();
+    test(end0, tmp, "Checking for wear on the last element", __LINE__);
+
+    tmp = inTape.read();
+    test(N_size, inTape.checkSize(), "Verifying that the signature is recorded correctly", __LINE__);
+    test(tmp, inTape.read(), "Checking position read after checkSize", __LINE__);
 }
