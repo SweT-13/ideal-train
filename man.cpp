@@ -28,6 +28,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <filesystem>
 
 #include "TapeInterface/fileTape.h"
 #include "TapeSorter.h"
@@ -42,24 +43,59 @@ int32_t my_rand()
 }
 void genirateFile(const char *Name = "hello.txt", int64_t N = 100)
 {
-    std::fstream gen(Name, std::ios_base::out);
+    std::ofstream gen(Name, std::ios_base::out | std::ios_base::binary);
     if (gen.is_open())
     {
         for (int64_t i = 0; i < N; i++)
         {
             int32_t tmp = my_rand();
             gen.write((char *)&tmp, sizeof(int32_t));
+            // gen.seekg(-sizeof(int32_t), std::ios::cur);
+            // gen.read((char *)&tmp, sizeof(int32_t));
             // std::cout << tmp << "\n";
         }
     }
     gen.close();
 }
 
-int main(int argc, char *argv[])
+
+void remove_all_files_in_directory(const std::filesystem::path &dir_path)
 {
     try
     {
+        if (std::filesystem::exists(dir_path) && std::filesystem::is_directory(dir_path))
+        {
+            for (const auto &entry : std::filesystem::directory_iterator(dir_path))
+            {
+                if (std::filesystem::is_regular_file(entry.path()))
+                {
+                    std::filesystem::remove(entry.path());
+                }
+            }
+        }
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
+        std::cerr << "Filesystem error: " << e.what() << "\n";
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "General exception: " << e.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown error occurred.\n";
+    }
+}
 
+int main(int argc, char *argv[])
+{
+
+    try
+    {
+        std::filesystem::path tmp_path = std::filesystem::current_path() / "tmp";
+        remove_all_files_in_directory(tmp_path);
+        
         std::cout << "tape in/out: \"" << (argc < 3 ? "in.txt" : argv[1]) << "\" / \"" << (argc < 3 ? "out.txt" : argv[2]) << "\"";
 
         std::fstream confFile;

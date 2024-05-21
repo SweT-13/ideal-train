@@ -3,10 +3,10 @@
 Tape::Tape(const std::string &filename, long long length)
     : _fileName(filename), _maxSize(length), _position(0)
 {
-    _file.open(_fileName);
+    _file.open(_fileName, std::ios::in | std::ios::out | std::ios::binary);
     if (!_file.is_open())
     {
-        _file.open(_fileName, std::ios::out);
+        _file.open(_fileName, std::ios::out | std::ios::binary);
     }
     testTape(_file);
 }
@@ -14,7 +14,7 @@ Tape::Tape(const std::string &filename, long long length)
 Tape::Tape(const std::string &filename)
     : _fileName(filename), _position(0)
 {
-    _file.open(_fileName);
+    _file.open(_fileName, std::ios::in | std::ios::binary);
     if (_file.is_open())
     {
         _maxSize = this->checkSize();
@@ -51,14 +51,14 @@ unsigned long long Tape::getTravelCounter(void) const
 
 void Tape::print()
 {
+    _file.seekg(0, std::ios::beg);
     testTape(_file);
     std::cout << "\n================== START content in file: " << _fileName << " ==================\n";
-    _file.seekg(0, std::ios::beg);
-    for (long long i = 0; i < _maxSize; i++)
+    for (int64_t i = 0; i < _maxSize; i++)
     {
         int32_t tmp = 0;
         _file.read((char *)&tmp, sizeof(int32_t));
-        std::cout << tmp << "\n";
+        std::cout << (int32_t)tmp << "\n";
     }
     _file.seekg(_position * sizeof(int32_t), std::ios::beg);
     std::cout << "================== END content in file: " << _fileName << " ==================\n";
@@ -69,18 +69,13 @@ void Tape::shiftCursor(long long index)
     testTape(_file);
     if (index >= 0)
     {
-        if (index >= _maxSize)
-        {
-            index = _maxSize - 1;
-            // throw ??
-        }
         _position = index;
-        _file.seekg(index * sizeof(int32_t), std::ios::beg);
-        _file.seekp(index * sizeof(int32_t), std::ios::beg);
+        _file.seekg((index >= _maxSize ? _maxSize - 1 : index) * sizeof(int32_t), std::ios::beg);
+        _file.seekp((index >= _maxSize ? _maxSize - 1 : index) * sizeof(int32_t), std::ios::beg);
     }
     else
     {
-        if (-index > _maxSize)
+        if (-index >= _maxSize)
         {
             index = -_maxSize;
             // throw ??
