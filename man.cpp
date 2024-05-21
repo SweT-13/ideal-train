@@ -58,7 +58,6 @@ void genirateFile(const char *Name = "hello.txt", int64_t N = 100)
     gen.close();
 }
 
-
 void remove_all_files_in_directory(const std::filesystem::path &dir_path)
 {
     try
@@ -95,7 +94,7 @@ int main(int argc, char *argv[])
     {
         std::filesystem::path tmp_path = std::filesystem::current_path() / "tmp";
         remove_all_files_in_directory(tmp_path);
-        
+
         std::cout << "tape in/out: \"" << (argc < 3 ? "in.txt" : argv[1]) << "\" / \"" << (argc < 3 ? "out.txt" : argv[2]) << "\"";
 
         std::fstream confFile;
@@ -118,18 +117,23 @@ int main(int argc, char *argv[])
         std::cout << "\nread  time(ms):\t" << readTime;
         std::cout << "\nshift time(ms):\t" << shiftTime;
         std::cout << "\ntravel time(ms):" << travelTime;
-        if (N_size < 3)
+        if (N_size < 2)
         {
             alarm("need positive N_size and 3 min");
         }
-        if (M_size < 8)
+        if (M_size < 40)
         {
-            // пока короче минимум 8
-            alarm("I need more memory (min 8)");
+            alarm("I need more memory (min 40)");
+        }
+        if (M_size >= N_size)
+        {
+            alarm("Someone doesn't fulfill their conditions");
         }
         if (argc < 3)
         {
             genirateFile("in.txt", N_size);
+            std::fstream clear_file("test.txt", std::ios::out);
+            clear_file.close();
         }
 
         Tape inTape(argc < 3 ? "in.txt" : argv[1], N_size);
@@ -137,12 +141,16 @@ int main(int argc, char *argv[])
 
         std::cout << "\n-----------------\nHello World Sort!\n-----------------\n";
 
-        // int64_t tmp;
-        // std::cout << (int32_t)(inTape.read(tmp) >> 32) << "\n";
-        // inTape.shiftCur(1);
-        // std::cout << (int32_t)(inTape.read(tmp));
         TapeSorter sorter(M_size);
         sorter.sort(inTape, outTape);
+
+        std::string x = "x";
+        std::cout << "Press \"y\" to view --> ";
+        std::cin >> x;
+        if (x == "y" || x == "Y")
+        {
+            outTape.print();
+        }
     }
     catch (std::invalid_argument &e)
     {

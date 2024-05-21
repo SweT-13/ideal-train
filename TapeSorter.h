@@ -7,6 +7,19 @@
 #include "TapeInterface/ITape.h"
 #include "TapeInterface/FileTape.h"
 
+#if 0
+#define VIEW_ALGO_MERGE(x) x;
+#else
+#define VIEW_ALGO_MERGE(x) ;
+#endif
+// #define VIEW
+
+#if 0
+#define VIEW_LOGIC_MERGE(x) x;
+#else
+#define VIEW_LOGIC_MERGE(x) ;
+#endif
+
 class TapeSorter
 {
 public:
