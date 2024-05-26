@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <stdint.h>
 #include "ITape.h"
+#include <thread>
+#include <chrono>
 
 #define singleElementSize 4
 
@@ -18,8 +20,8 @@
 class Tape : public ITape
 {
 public:
-    Tape(const std::string &filename, long long length);
-    Tape(const std::string &filename);
+    Tape(const std::string &filename, long readDelay = 0, long writeDalay = 0, long shiftDalay = 0);
+    Tape(const std::string &filename, long long length, long readDelay = 0, long writeDalay = 0, long shiftDalay = 0);
     ~Tape();
 
     int32_t read(void) override;
@@ -45,10 +47,15 @@ private:
     int64_t _maxSize = 0u;
     std::streampos _position;
 
-    unsigned long long _writeCounter = 0u;
     unsigned long long _readCounter = 0u;
+    unsigned long long _writeCounter = 0u;
     unsigned long long _shiftCounter = 0u;
     unsigned long long _travelCounter = 0u;
+
+    long _readDelay = 0;
+    long _writeDelay = 0;
+    long _shiftDelay = 0;
+    long _travelDelay = 0;
 };
 
 /*

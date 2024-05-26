@@ -29,7 +29,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <filesystem>
-
+#include <chrono>
 #include "TapeInterface/fileTape.h"
 #include "TapeSorter.h"
 
@@ -106,10 +106,10 @@ int main(int argc, char *argv[])
         // @Надо бы проверить на корректность числа
         int64_t N_size = 0;
         int64_t M_size = 0u;
-        unsigned long writeTime = 0u;
-        unsigned long readTime = 0u;
-        unsigned long shiftTime = 0u;
-        unsigned long travelTime = 0u;
+        long long writeTime = 0u;
+        long long readTime = 0u;
+        long long shiftTime = 0u;
+        long long travelTime = 0u;
         confFile >> N_size >> M_size >> writeTime >> readTime >> shiftTime >> travelTime;
         std::cout << "\ntape size:\t" << N_size;
         std::cout << "\nRAM size:\t" << M_size;
@@ -125,9 +125,13 @@ int main(int argc, char *argv[])
         {
             alarm("I need more memory (min 40)");
         }
-        if (M_size >= N_size)
+        if (M_size / 4 >= N_size)
         {
             alarm("Someone doesn't fulfill their conditions");
+        }
+        if (readTime < 0 || writeTime < 0 || shiftTime < 0)
+        {
+            alarm("Time cannot be negative");
         }
         if (argc < 3)
         {
@@ -136,14 +140,17 @@ int main(int argc, char *argv[])
             clear_file.close();
         }
 
-        Tape inTape(argc < 3 ? "in.txt" : argv[1], N_size);
-        Tape outTape(argc < 3 ? "out.txt" : argv[2], N_size);
+        Tape inTape(argc < 3 ? "in.txt" : argv[1], N_size, readTime, writeTime, shiftTime);
+        Tape outTape(argc < 3 ? "out.txt" : argv[2], N_size, readTime, writeTime, shiftTime);
 
         std::cout << "\n-----------------\nHello World Sort!\n-----------------\n";
 
         TapeSorter sorter(M_size);
+        auto start = std::chrono::high_resolution_clock::now();
         sorter.sort(inTape, outTape);
-
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+        std::cout << "Duration: " << duration.count() << " seconds\n";
         std::string x = "x";
         std::cout << "Press \"y\" to view --> ";
         std::cin >> x;

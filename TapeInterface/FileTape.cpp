@@ -1,7 +1,7 @@
 #include "FileTape.h"
 
-Tape::Tape(const std::string &filename, long long length)
-    : _fileName(filename), _maxSize(length), _position(0)
+Tape::Tape(const std::string &filename, long long length, long readDelay, long writeDelay, long shiftDelay)
+    : _fileName(filename), _maxSize(length), _position(0), _readDelay(readDelay), _writeDelay(writeDelay), _shiftDelay(shiftDelay)
 {
     _file.open(_fileName, std::ios::in | std::ios::out | std::ios::binary);
     if (!_file.is_open())
@@ -11,8 +11,8 @@ Tape::Tape(const std::string &filename, long long length)
     testTape(_file);
 }
 
-Tape::Tape(const std::string &filename)
-    : _fileName(filename), _position(0)
+Tape::Tape(const std::string &filename, long readDelay, long writeDelay, long shiftDelay)
+    : _fileName(filename), _position(0), _readDelay(readDelay), _writeDelay(writeDelay), _shiftDelay(shiftDelay)
 {
     _file.open(_fileName, std::ios::in | std::ios::binary);
     if (_file.is_open())
@@ -84,6 +84,7 @@ void Tape::shiftCursor(long long index)
         _file.seekg(_position * sizeof(int32_t), std::ios::beg);
         _file.seekp(_position * sizeof(int32_t), std::ios::beg);
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(_shiftDelay));
 }
 
 std::streampos Tape::getCurrentPosition() const
@@ -121,6 +122,7 @@ int32_t Tape::read()
     _file.read((char *)&tmp, sizeof(int32_t));
     _file.seekg(-1 * (sizeof(int32_t)), std::ios::cur);
     _readCounter++;
+    std::this_thread::sleep_for(std::chrono::milliseconds(_readDelay));
     return tmp;
 }
 
@@ -136,6 +138,7 @@ void Tape::write(const int32_t &needWrite)
     _file.write((char *)&needWrite, sizeof(int32_t));
     _file.seekp(-1 * (sizeof(int32_t)), std::ios::cur);
     _writeCounter++;
+    std::this_thread::sleep_for(std::chrono::milliseconds(_writeDelay));
 }
 void Tape::writen(const int32_t &needWrite)
 {
